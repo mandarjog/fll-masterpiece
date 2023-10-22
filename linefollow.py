@@ -30,9 +30,10 @@ def is_right_black(color_sensor: ColorSensor):
     else:
         return False
 
-def calculate_steering_for_gyro(error: int)-> int:
-    KAngle = 1
-    magnitude = int(KAngle * error) * -1
+def calculate_steering_for_gyro(error: int, total_error: int)-> int:
+    KAngle = 2
+    KTotalError = 0.5
+    magnitude = int((KAngle * error)  + (total_error * KTotalError)) * -1
     return magnitude
 
 def gyro_straight(motion_sensor: MotionSensor, motor_pair: MotorPair, dist_degrees: int, single_motor:Motor):
@@ -40,11 +41,18 @@ def gyro_straight(motion_sensor: MotionSensor, motor_pair: MotorPair, dist_degre
     motion_sensor.reset_yaw_angle()
     start_degrees = single_motor.get_degrees_counted()
     motors_power = 20
+    total_error = 0
 
     degrees_traveled = 0
     while  degrees_traveled < dist_degrees:
         gyro_error = motion_sensor.get_yaw_angle()
-        steering =  calculate_steering_for_gyro(error=gyro_error)
+        total_error = total_error + gyro_error
+
+        if gyro_error == 0:
+            total_error = 0
+
+        steering =  calculate_steering_for_gyro(error=gyro_error, total_error=total_error)
+        print('error', gyro_error, 'steering', steering)
         motors.start_at_power(motors_power, steering)
         current_degrees = single_motor.get_degrees_counted()
         degrees_traveled = current_degrees - start_degrees
@@ -75,6 +83,7 @@ def line_follow(color_sensor: ColorSensor, motors: MotorPair, black_on_left: boo
 
     motors.stop()
 
-line_follow(left_color_sensor, motors, black_on_left=True,
-    dist_degrees=360, single_motor=left_motor,
-    stop_color_sensor=right_color_sensor)
+#line_follow(left_color_sensor, motors, black_on_left=True,
+#    dist_degrees=360, single_motor=left_motor,
+#    stop_color_sensor=right_color_sensor)
+gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist_degrees=400, single_motor=left_motor)
