@@ -7,7 +7,8 @@ hub = PrimeHub()
 hub.light_matrix.show_image('HAPPY')
 
 hub = PrimeHub()
-color_sensor = ColorSensor('B')
+left_color_sensor = ColorSensor('B')
+right_color_sensor = ColorSensor('F')
 motors = MotorPair('A', 'E')
 left_motor = Motor('A')
 
@@ -23,9 +24,17 @@ def calculate_turn_for_color(error, black_on_left):
     print("calculate_turn err=", error, ", mag=", magnitude)
     return magnitude
 
+def is_right_black(color_sensor):
+    right_color = color_sensor.get_reflected_light()
+    if right_color <= 60:
+        return True
+    else:
+        return False
+
+
 
 # black_on_left: True if black line is on the left of white.
-def line_follow(color_sensor, motors, black_on_left, dist_degrees, single_motor):
+def line_follow(color_sensor, motors, black_on_left, dist_degrees, single_motor, stop_color_sensor):
     print ("            ")
     print (" *** Staring line_follow")
 
@@ -35,11 +44,18 @@ def line_follow(color_sensor, motors, black_on_left, dist_degrees, single_motor)
     degrees_traveled = 0
 
     while  degrees_traveled < dist_degrees:
-        error = color_sensor.get_reflected_light() - target_reflected
+        error = left_color_sensor.get_reflected_light() - target_reflected
         steering = calculate_turn_for_color(error, True)
         motors.start_at_power(motors_power, steering)
 
         current_degrees = single_motor.get_degrees_counted()
         degrees_traveled = current_degrees - start_degrees
+        if is_right_black(stop_color_sensor) is True:
+            break
 
-line_follow(color_sensor, motors, black_on_left=True, dist_degrees=360, single_motor=left_motor)
+    motors.stop()
+
+
+line_follow(left_color_sensor, motors, black_on_left=True,
+    dist_degrees=360, single_motor=left_motor, 
+    stop_color_sensor=right_color_sensor)
