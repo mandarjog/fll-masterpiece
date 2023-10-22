@@ -1728,7 +1728,7 @@ class ColorSensor:
         RuntimeError : The sensor has been disconnected from the Port.
         """
         pass
-    def get_reflected_light(self):
+    def get_reflected_light(self)-> int:
         """
         Retrieves the intensity of the reflected light.
         

@@ -3,10 +3,9 @@ from spike.control import wait_for_seconds, wait_until, Timer
 from math import *
 
 hub = PrimeHub()
-
 hub.light_matrix.show_image('HAPPY')
 
-hub = PrimeHub()
+
 left_color_sensor = ColorSensor('B')
 right_color_sensor = ColorSensor('F')
 motors = MotorPair('A', 'E')
@@ -15,7 +14,7 @@ left_motor = Motor('A')
 # calculates turn by taking error and multiplying it by + or - and KColor 
 # to find the direction and magnitude of correction
 #. 
-def calculate_turn_for_color(error, black_on_left):
+def calculate_turn_for_color(error: int, black_on_left: bool):
     KColor = 1.0
     magnitude = int(error * KColor)
     if black_on_left is True:
@@ -24,7 +23,7 @@ def calculate_turn_for_color(error, black_on_left):
     print("calculate_turn err=", error, ", mag=", magnitude)
     return magnitude
 
-def is_right_black(color_sensor):
+def is_right_black(color_sensor: ColorSensor):
     right_color = color_sensor.get_reflected_light()
     if right_color <= 60:
         return True
@@ -32,9 +31,9 @@ def is_right_black(color_sensor):
         return False
 
 
-
 # black_on_left: True if black line is on the left of white.
-def line_follow(color_sensor, motors, black_on_left, dist_degrees, single_motor, stop_color_sensor):
+def line_follow(color_sensor: ColorSensor, motors: MotorPair, black_on_left: bool, 
+                dist_degrees: int, single_motor: Motor, stop_color_sensor:ColorSensor):
     print ("            ")
     print (" *** Staring line_follow")
 
@@ -55,7 +54,6 @@ def line_follow(color_sensor, motors, black_on_left, dist_degrees, single_motor,
 
     motors.stop()
 
-
 line_follow(left_color_sensor, motors, black_on_left=True,
-    dist_degrees=360, single_motor=left_motor, 
+    dist_degrees=360, single_motor=left_motor,
     stop_color_sensor=right_color_sensor)
