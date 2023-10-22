@@ -1,3 +1,6 @@
+# From: https://github.com/sanjayseshan/spikeprime-tools/blob/master/spiketools/hub/spike.py
+# Updated with some type hints.
+
 """
 SPIKE Prime Python Classes
 """
