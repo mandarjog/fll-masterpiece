@@ -13,7 +13,7 @@ left_motor = Motor('A')
 ONE_ROTATION_DISTANCE = 27.018
 # calculates turn by taking error and multiplying it by + or - and KColor
 # to find the direction and magnitude of correction
-#.
+
 
 #DRIVE FUNCTIONS
 def wait_for_yaw(angle=90):
