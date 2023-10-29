@@ -60,6 +60,9 @@ def calculate_distance(degress_traveled: float):
       return (degress_traveled * ONE_ROTATION_DISTANCE) / 360
 
 def gyro_straight(motion_sensor: MotionSensor, motor_pair: MotorPair, dist: float, single_motor:Motor, speed: int):
+    motor_pair.move_tank(amount=dist, unit='cm', left_speed=speed, right_speed=speed)    
+
+def gyro_straight_A(motion_sensor: MotionSensor, motor_pair: MotorPair, dist: float, single_motor:Motor, speed: int):
     print('Starting Gyro Straight')
     motion_sensor.reset_yaw_angle()
     start_degrees = single_motor.get_degrees_counted()
@@ -138,7 +141,10 @@ def line_follow(color_sensor: ColorSensor, motors: MotorPair, black_on_left: boo
 
 def mission_2_3():
     gyro_error = hub.motion_sensor.get_yaw_angle()
+
+
     gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=-58.5, single_motor=left_motor, speed=50)
+
     angle_turn(motor_pair=motors, steer=-100, speed=30, angle= -35, stop=True)
     
     motors.set_stop_action('coast')
@@ -160,3 +166,4 @@ def mission_2_3():
 
 
 mission_2_3()
+mission_5()
