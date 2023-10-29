@@ -25,8 +25,9 @@ def wait_for_yaw(angle=90):
         while yaw >= angle: yaw = hub.motion_sensor.get_yaw_angle()
 
 
-def angle_turn(motor_pair=motors, steer=100, speed=50, angle=90, stop=False):
-    hub.motion_sensor.reset_yaw_angle()
+def angle_turn(motor_pair=motors, steer=100, speed=50, angle=90, stop=False, reset_angle=True):
+    if reset_angle:
+        hub.motion_sensor.reset_yaw_angle()
     motor_pair.start(steering=steer, speed=speed)
     wait_for_yaw(angle=angle)
     if stop:
@@ -56,18 +57,18 @@ def calculate_steering_for_gyro(error: int, total_error: int)-> int:
     return magnitude
 
 
-def calculate_distance(degress_traveled: float): 
-      return (degress_traveled * ONE_ROTATION_DISTANCE) / 360
+def calculate_distance(degress_traveled: float):
+    return (degress_traveled * ONE_ROTATION_DISTANCE) / 360
 
 def gyro_straight(motion_sensor: MotionSensor, motor_pair: MotorPair, dist: float, single_motor:Motor, speed: int):
-    motor_pair.move_tank(amount=dist, unit='cm', left_speed=speed, right_speed=speed)    
+    motor_pair.move_tank(amount=dist, unit='cm', left_speed=speed, right_speed=speed)
 
 def gyro_straight_A(motion_sensor: MotionSensor, motor_pair: MotorPair, dist: float, single_motor:Motor, speed: int):
     print('Starting Gyro Straight')
-    motion_sensor.reset_yaw_angle()
+    start_yaw_angle = motion_sensor.get_yaw_angle()
     start_degrees = single_motor.get_degrees_counted()
     motors_power = speed
-    
+
     total_error = 0
     dist_degrees = dist * 360 / ONE_ROTATION_DISTANCE
     print("dist_degrees:", dist_degrees)
@@ -78,7 +79,7 @@ def gyro_straight_A(motion_sensor: MotionSensor, motor_pair: MotorPair, dist: fl
     degrees_traveled = 0
     if dist > 0:
         while degrees_traveled < dist_degrees or single_motor.was_interrupted():
-            gyro_error = motion_sensor.get_yaw_angle()
+            gyro_error = motion_sensor.get_yaw_angle() - start_yaw_angle
             total_error = total_error + gyro_error
 
             if gyro_error == 0:
@@ -90,7 +91,7 @@ def gyro_straight_A(motion_sensor: MotionSensor, motor_pair: MotorPair, dist: fl
             current_degrees = single_motor.get_degrees_counted()
             degrees_traveled = start_degrees - current_degrees
             print("degrees_traveled:",degrees_traveled, "distance traveled", calculate_distance(degrees_traveled))
-    else: 
+    else:
         motors_power = speed * -1
 
         while degrees_traveled > dist_degrees: # or not single_motor.was_interrupted():
@@ -104,7 +105,7 @@ def gyro_straight_A(motion_sensor: MotionSensor, motor_pair: MotorPair, dist: fl
             print('reverse error', motors_power, gyro_error, 'steering', steering*-1)
             motors.start_at_power(motors_power, steering*-1)
             current_degrees = single_motor.get_degrees_counted()
-            degrees_traveled =  start_degrees - current_degrees
+            degrees_traveled =start_degrees - current_degrees
             print("dist", dist_degrees, "<? reverse degrees_traveled:, ",degrees_traveled, ", distance traveled", calculate_distance(degrees_traveled))
 
     motor_pair.stop()
@@ -142,28 +143,48 @@ def line_follow(color_sensor: ColorSensor, motors: MotorPair, black_on_left: boo
 def mission_2_3():
     gyro_error = hub.motion_sensor.get_yaw_angle()
 
-
-    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=-58.5, single_motor=left_motor, speed=50)
+    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=-43, single_motor=left_motor, speed=50)
 
     angle_turn(motor_pair=motors, steer=-100, speed=30, angle= -35, stop=True)
-    
+
     motors.set_stop_action('coast')
     distance = gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=-8, single_motor=left_motor, speed=30)
     print ("Total distance travelled", distance)
     gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=4, single_motor=left_motor, speed=30)
-    
+    angle_turn(motor_pair=motors, steer=-100, speed=30, angle= -35, stop=True, reset_angle=False)
+
 
     distance = gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=-9, single_motor=left_motor, speed=30)
     print ("Total distance travelled", distance)
     gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=2, single_motor=left_motor, speed=30)
-    angle_turn(motor_pair=motors, steer=100, speed=30, angle= 120, stop=True)
-    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=-45, single_motor=left_motor, speed=40)
-    angle_turn(motor_pair=motors, steer=-100, speed=30, angle=-90, stop=True)
+    angle_turn(motor_pair=motors, steer=100, speed=30, angle=90, stop=True, reset_angle=False)
+    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=-28, single_motor=left_motor, speed=40)
+    angle_turn(motor_pair=motors, steer=-100, speed=20, angle=-90, stop=True)
     #gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=2, single_motor=left_motor, speed=20)
-    front_motor.run_for_degrees(-400, 100)
+    #motors.set_stop_action('coast')
+    #motors.move(1, 'seconds', steering=0, speed=-15)
+    motors.move(1, 'seconds', 0, -50)
+    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=4, single_motor=left_motor, speed=40)
+    front_motor.run_for_degrees(-720, 100)
+    wait_for_seconds(1)
+    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=2, single_motor=left_motor, speed=40)
     front_motor.run_for_degrees(400, 70)
+    angle_turn(motor_pair=motors, steer=100, speed=30, angle=90, stop=True, reset_angle=False)
 
+
+
+
+def mission_5(left_motor, right_motor, motor_pair, front_motor):
+    # turn the robot right
+    left_motor.run_for_degrees(90)
+    # move robot 15 degrees foward at the speed of 50
+    motor_pair.move_tank(-15, 'cm', left_speed=-50, right_speed=-50)
+    # move the front attachement down
+    front_motor.run_for_degrees(-180)
+    # code for preparing the bot to do some real work
+    # swing robot right to flick lever
+    right_motor.run_for_degrees(-180)
 
 
 mission_2_3()
-mission_5()
+mission_5(left_motor, right_motor, motors, front_motor)
