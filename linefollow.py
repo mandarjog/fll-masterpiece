@@ -198,5 +198,17 @@ def mission_10(motor_pair, front_motor):
     motor_pair.move_tank(-2, 'cm', left_speed=-1, right_speed=-1)
     motor_pair.move_tank(5, 'cm', left_speed=10, right_speed=-10)
 
+
+def mission_8(motors, left_motor, right_motor):
+    """
+    Rolling Camera
+    @connor
+    """
+    left_motor.run_to_position(0)
+    right_motor.run_to_position(0)
+    wait_for_seconds(5)
+    motors.move_tank(-30, 'cm', left_speed=-20, right_speed=-20)
+    motors.move_tank(-25, 'cm', left_speed=20, right_speed=20)
+
 mission_2_3()
 mission_5(motors, left_motor, right_motor, front_motor)
