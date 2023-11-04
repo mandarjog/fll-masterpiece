@@ -11,6 +11,8 @@ right_color_sensor = ColorSensor('F')
 
 motors = MotorPair('A', 'E')
 left_motor = Motor('A')
+right_motor = Motor('E')
+
 ONE_ROTATION_DISTANCE = 27.018
 # calculates turn by taking error and multiplying it by + or - and KColor
 # to find the direction and magnitude of correction
@@ -172,9 +174,10 @@ def mission_2_3():
     angle_turn(motor_pair=motors, steer=100, speed=30, angle=90, stop=True, reset_angle=False)
 
 
-
-
-def mission_5(left_motor, right_motor, motor_pair, front_motor):
+def mission_5(motor_pair, left_motor, right_motor, front_motor):
+    """
+    cora
+    """
     # turn the robot right
     left_motor.run_for_degrees(90)
     # move robot 15 degrees foward at the speed of 50
@@ -185,6 +188,15 @@ def mission_5(left_motor, right_motor, motor_pair, front_motor):
     # swing robot right to flick lever
     right_motor.run_for_degrees(-180)
 
+def mission_10(motor_pair, front_motor):
+    """
+    connor
+    """
+    motor_pair.move_tank(-20, 'cm', left_speed=-50, right_speed=-50)
+    front_motor.run_to_position(0)
+    front_motor.run_for_degrees(300)
+    motor_pair.move_tank(-2, 'cm', left_speed=-1, right_speed=-1)
+    motor_pair.move_tank(5, 'cm', left_speed=10, right_speed=-10)
 
 mission_2_3()
-mission_5(left_motor, right_motor, motors, front_motor)
+mission_5(motors, left_motor, right_motor, front_motor)
