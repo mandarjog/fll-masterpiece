@@ -4,24 +4,18 @@ from math import *
 
 hub = PrimeHub()
 
-
-
-#DRIVE FUNCTIONS
 def wait_for_yaw(angle=90):
     yaw = 0
     if angle > 0:
         while yaw <= angle: yaw = hub.motion_sensor.get_yaw_angle()
     elif angle < 0:
         while yaw >= angle: yaw = hub.motion_sensor.get_yaw_angle()
-
-
 def angle_turn(steer=100, speed=50, angle=90, stop=False):
     hub.motion_sensor.reset_yaw_angle()
     drive_motors_i.start(steering=steer, speed=speed)
     wait_for_yaw(angle=angle)
     if stop:
         drive_motors_i.stop()
-
 def gyro_turn(desired_angle,speed,direction):
     prev_speed = speed
     if direction == 'right':
@@ -57,29 +51,6 @@ def gyro_turn(desired_angle,speed,direction):
         prev_speed = speed
         moving_motors.stop()
         print('The final yaw angle is: ',x)
-    
-#gyro_turn(90,30,'left')
-#gyro_turn(120,30,'right')
-
-
-
-
-#gyro straight- gyro straight fixes spikes path from veering and also makes sure that even if the bot is pushed it will correct back to going straight,
-#based on the in-built motion sensor in spike GYRO-SCOPE
-
-#the slowest speed you can run gyro straight at is 15(spd)
-
-#how the code works: to stop jerkiness that happened when we went one centimeter at a time, instead we meausured the circumference of the wheel
-#-and divided it by one rotation of the wheel(360) then we got our 'distance divider' which converts the 'degrees counted' into actual distance
-#- in centimeters this way we just call it to start and then when traveled distance is not less than user input the loop will stop and the bot won't run
-
-"""
-distance is in 'cm', spd is from 1-100
-gyro_straight(dist, spd) #forward
-Ex: gyro_straight(9, 50)
-gyro_straight(dist, -spd) #backwards
-
-"""
 def gyro_straight(drive_motors, dist,spd): 
     dist = float(dist)
     DISTANCE_DIVIDER = -20.8695652174
@@ -95,14 +66,10 @@ def gyro_straight(drive_motors, dist,spd):
     drive_motors.start_at_power(spd, 0)
     drive_motors.move(dist, 'cm', 0, spd)
     print('the loop has run this distance :', distance_traveled)
-
-    #loop is over, distance_traveled is NOT less than dist   
     drive_motors.stop()
 print('------------------------------------------------------------------------------')
 print('------------------------------------------------------------------------------')
 
-# gyro_turn(30) # turn to  30 deg
-# (15, 20) # 15 cm at spee 20
 
 def fllStandardBot():
     drive_motors_i = MotorPair('A', 'E')
@@ -110,7 +77,6 @@ def fllStandardBot():
     drive_motors = MotorPair('A', 'E')
     DISTANCE_DIVIDER = -13.04
     return drive_motors_i, single_motor, drive_motors
-
 def fllCastBot():
     drive_motors_i = MotorPair('A', 'B')
     single_motor = Motor('A')
@@ -118,113 +84,11 @@ def fllCastBot():
     DISTANCE_DIVIDER = -20.8695652174
     return drive_motors_i, single_motor, drive_motors
 
-
-
 drive_motors_i, single_motor, drive_motors = fllStandardBot()
-
-#drive_motors_i.start_at_power(12,0) 
-
-#MAIN LOGIC
-#drive_motors = MotorPair('A', 'B')
 drive_motors.set_stop_action('brake')
 moving_motors = drive_motors
-# single_motor =  Motor('A')
-# back_motor = Motor('D')
-# front_motor = Motor('C')
 
-def run_3():
-    # move to the toy factory
-    #TRIANGLE TIME
-    #gyro_straight(drive_motors, 40, 30)
-    #hub.motion_sensor.reset_yaw_angle()
-    #gyro_turn(120, 30, 'right')
-    #hub.motion_sensor.reset_yaw_angle()
-    #gyro_straight(drive_motors, 40, 20)
-    #gyro_turn(120, 30, 'right')
-    #hub.motion_sensor.reset_yaw_angle()
-    #gyro_straight(drive_motors, 45, 20)
-    #gyro_turn(110, 30, 'right')
-    #gyro_straight(drive_motors, 5, -20)
-    #RECTANGLE TIME
-    #gyro_straight(drive_motors, 100, 45)
-    #hub.motion_sensor.reset_yaw_angle()
-    #gyro_turn(90, 45, 'right')
-    #gyro_straight(drive_motors, 50, 45)
-    #hub.motion_sensor.reset_yaw_angle()
-    #gyro_turn(88, 45, 'right')
-    #gyro_straight(drive_motors, 100, 45)
-    #hub.motion_sensor.reset_yaw_angle()
-    #gyro_turn(86, 45, 'right')
-    #gyro_straight(drive_motors, 55, 45)
-    #hub.motion_sensor.reset_yaw_angle()
-    #gyro_turn(84, 45, 'right')
-    #CIRCLE TIME
-    angle_turn(steer=50, speed=50, angle=90, stop=True)
-    # gyro_straight(drive_motors, 20, 20)
-    # hub.motion_sensor.reset_yaw_angle()
-    # gyro_turn(90, 20, 'right')
-    # gyro_straight(drive_motors, 20, 20)
-    # hub.motion_sensor.reset_yaw_angle()
-    # gyro_turn(90, 20, 'right')
-    # gyro_straight(drive_motors, 20, 20)
-    # hub.motion_sensor.reset_yaw_angle()
-    # gyro_turn(90, 20, 'right')
-    # gyro_straight(drive_motors, 20, 20)
-    # hub.motion_sensor.reset_yaw_angle()
-    # gyro_turn(90, 20, 'right')
-    # gyro_straight(drive_motors, 40, 20)
-    # gyro_turn(360, 15, 'right')
-    # gyro_straight(drive_motors, 40, 20)
-    # drop the units in the hopper
-    # back_motor.run_for_degrees(80,20)
-    
-    # come back and turn around
-    # gyro_straight(drive_motors, 20, 55)
-    # gyro_turn(130, 15, 'right')
-    # hub.motion_sensor.reset_yaw_angle() 
-    
-    # drive to the hand.
-    # gyro_straight(drive_motors, 62, 55)
-    # # gyro_turn(90, 25, 'right')
-    # gyro_straight(drive_motors, dist=48, spd=55)
-    # front_motor.run_for_degrees(-90,20)
-    # gyro_straight(drive_motors, dist=10, spd=-35)
-    # front_motor.run_for_degrees(90,20)
-    # #gyro_straight(drive_motors, dist=15, spd=-35)
-    # hub.motion_sensor.reset_yaw_angle()
-    # gyro_turn(80, 25,'right')
-    #  #go towards the hybrid car
-    # gyro_straight(drive_motors, dist=19, spd=50)
-    # gyro_turn(0, 25, 'left')
-    # gyro_straight(drive_motors, dist=14, spd=30)
-    # front_motor.run_for_degrees(90,20)
-    # gyro_turn(42, 100, 'right')
-    # wait_for_seconds(3)
-    # gyro_turn(0, 50, 'left')
-    
-    
-    
-    # gyro_turn(145, 25, 'left')
-
-    #gyro_straight(drive_motors, dist=55, spd=55)
-  #  gyro_turn(120, 25, 'right')
-    #turning towards the hybrid car
-   # gyro_straight(drive_motors, dist=30, spd=65)
-   # gyro_turn(45, 12, 'right')
-    #gyro_straight(drive_motors, dist=5, spd=25)
- #  gyro_turn(223, 25, 'right')
-
-
-def mission_delivering_stuff_1():
-    gyro_straight(drive_motors, 17, 25)#drive motors, distance, speed
-    angle_turn(steer=-30, speed=25, angle=-90, stop=True)#(for left, angle and steer are negative)
-    gyro_straight(drive_motors, 15, 25)#drive motors, distance, speed
-    angle_turn(steer=50, speed=25, angle=50, stop=True)#for right, angle and steer are positive
-    gyro_straight(drive_motors, 10, -25)
-    angle_turn(steer=100, speed=25, angle=100, stop=True)
-    gyro_straight(drive_motors, 30, 25)
-
-def mission_delivering_stuff_2():
+def delivery_and_hologram_performer():
     gyro_straight(drive_motors, 17, 45)#drive motors, distance, speed
     angle_turn(steer=-30, speed=25, angle=-90, stop=True)#(for left, angle and steer are negative)
     gyro_straight(drive_motors, 20, 25)#drive motors, distance, speed
@@ -233,8 +97,7 @@ def mission_delivering_stuff_2():
     gyro_straight(drive_motors, 10, -25)
     angle_turn(steer=100, speed=25, angle=85, stop=True)
     gyro_straight(drive_motors, 35, 45)
-
-def pushy_thingy():
+def craft_creator():
     gyro_straight(drive_motors, -5, 45)
     angle_turn(steer=100, speed=30, angle=90, stop=True)
     gyro_straight(drive_motors, 30, 45)
@@ -242,5 +105,5 @@ def pushy_thingy():
     gyro_straight(drive_motors, 20, 45)
     gyro_straight(drive_motors, -30, 45)
 
-mission_delivering_stuff_2()
-pushy_thingy()
+delivery_and_hologram_performer()
+craft_creator()
