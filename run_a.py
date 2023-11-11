@@ -14,13 +14,18 @@ right_color_sensor = ColorSensor('F')
 motors = MotorPair('A', 'E')
 left_motor = Motor('A')
 right_motor = Motor('E')
+front_motor = Motor('D')
+
 
 ##
 
-def mission_1_cinema_dragon():
-    '''
-    @connor fill this in.
-    '''
-    pass
+def mission_1_cinema_dragon(motor_pair=motors):
+    motor_pair = MotorPair('E', 'A')
+    front_motor = Motor('D')
+    motor_pair.start_tank(-10, -10)
+    motor_pair.move_tank(18, 'cm', left_speed=-20, right_speed=-20)
+    front_motor.run_to_position(208)
+    motor_pair.move_tank(18, 'cm', left_speed =20, right_speed=20)
+    front_motor.run_to_position(0)
 
-mission_1_cinema_dragon()
+mission_1_cinema_dragon(motors)
