@@ -1,5 +1,3 @@
-# LEGO type:standard slot:4 autostart
-
 from spike import PrimeHub, LightMatrix, Button, StatusLight, ForceSensor, MotionSensor, Speaker, ColorSensor, App, DistanceSensor, Motor, MotorPair
 from spike.control import wait_for_seconds, wait_until, Timer
 from math import *
@@ -30,7 +28,7 @@ def gyro_turn(desired_angle,speed,direction):
             print("My speed is changing to ",speed)
             x = hub.motion_sensor.get_yaw_angle()
             print(x)
-            if desired_angle-x <= 20: 
+            if desired_angle-x <= 20:
                 speed = 4
             if prev_speed != speed:
                 moving_motors.start_tank(speed, speed*-1)
@@ -53,10 +51,10 @@ def gyro_turn(desired_angle,speed,direction):
         prev_speed = speed
         moving_motors.stop()
         print('The final yaw angle is: ',x)
-def gyro_straight(drive_motors, dist,spd): 
+def gyro_straight(drive_motors, dist,spd):
     dist = float(dist)
     DISTANCE_DIVIDER = -20.8695652174
-    #we got distance divider by dividing 17.25cm (the circumference of the wheel) by -360(one wheel rotation) 
+    #we got distance divider by dividing 17.25cm (the circumference of the wheel) by -360(one wheel rotation)
     single_motor.set_degrees_counted(0)
     drive_motors.set_stop_action('brake')
     print('distance =', dist)
@@ -89,23 +87,26 @@ def fllCastBot():
 drive_motors_i, single_motor, drive_motors = fllStandardBot()
 drive_motors.set_stop_action('brake')
 moving_motors = drive_motors
+front_motor = Motor('C')
 
 def delivery_and_hologram_performer():
-    gyro_straight(drive_motors, 17, 45)#drive motors, distance, speed
-    angle_turn(steer=-30, speed=25, angle=-90, stop=True)#(for left, angle and steer are negative)
-    gyro_straight(drive_motors, 20, 25)#drive motors, distance, speed
-    angle_turn(steer=100, speed=25, angle=55, stop=True)#for right, angle and steer are positive
-    gyro_straight(drive_motors, 3, 45)
-    gyro_straight(drive_motors, 10, -25)
-    angle_turn(steer=100, speed=25, angle=85, stop=True)
-    gyro_straight(drive_motors, 35, 45)
+    gyro_straight(drive_motors, 17, 35)#drive motors, distance, speed
+    angle_turn(steer=-25, speed=25, angle=-90, stop=True)#(for left, angle and steer are negative)
+    gyro_straight(drive_motors, 27, 50)#drive motors, distance, speed
+    angle_turn(steer=100, speed=30, angle=75, stop=True)#for right, angle and steer are positive
+    gyro_straight(drive_motors, 4, 25)
+    front_motor.run_for_degrees(180, speed=65)
+    gyro_straight(drive_motors, 10, -35)
+    angle_turn(steer=100, speed=35, angle=70, stop=True)
+    front_motor.run_for_degrees(-180, speed=65)
+    gyro_straight(drive_motors, 40, 50)
 def craft_creator():
-    gyro_straight(drive_motors, -5, 45)
-    angle_turn(steer=100, speed=30, angle=90, stop=True)
-    gyro_straight(drive_motors, 30, 45)
-    angle_turn(steer=100, speed=30, angle=136, stop=True)
-    gyro_straight(drive_motors, 20, 45)
-    gyro_straight(drive_motors, -30, 45)
+    gyro_straight(drive_motors, -5, 50)
+    angle_turn(steer=100, speed=30, angle=60, stop=True)
+#    gyro_straight(drive_motors, 30, 45)
+#    angle_turn(steer=100, speed=30, angle=136, stop=True)
+#    gyro_straight(drive_motors, 20, 45)
+#    gyro_straight(drive_motors, -30, 45)
 
 delivery_and_hologram_performer()
 craft_creator()
