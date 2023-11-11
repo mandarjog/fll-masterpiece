@@ -95,18 +95,18 @@ def delivery_and_hologram_performer():
     gyro_straight(drive_motors, 27, 50)#drive motors, distance, speed
     angle_turn(steer=100, speed=30, angle=75, stop=True)#for right, angle and steer are positive
     gyro_straight(drive_motors, 4, 25)
-    front_motor.run_for_degrees(180, speed=65)
+    front_motor.run_for_degrees(250, speed=65)
     gyro_straight(drive_motors, 10, -35)
     angle_turn(steer=100, speed=35, angle=70, stop=True)
-    front_motor.run_for_degrees(-180, speed=65)
+    front_motor.run_for_degrees(-250, speed=65)
     gyro_straight(drive_motors, 40, 50)
 def craft_creator():
     gyro_straight(drive_motors, -5, 50)
     angle_turn(steer=100, speed=30, angle=60, stop=True)
-#    gyro_straight(drive_motors, 30, 45)
-#    angle_turn(steer=100, speed=30, angle=136, stop=True)
-#    gyro_straight(drive_motors, 20, 45)
-#    gyro_straight(drive_motors, -30, 45)
+    gyro_straight(drive_motors, 40, 45)
+    angle_turn(steer=100, speed=30, angle=145, stop=True)
+    gyro_straight(drive_motors, 30, 45)
+    gyro_straight(drive_motors, -30, 45)
 
 delivery_and_hologram_performer()
 craft_creator()
