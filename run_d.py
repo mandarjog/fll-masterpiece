@@ -96,7 +96,7 @@ def delivery_and_hologram_performer():
     angle_turn(steer=100, speed=30, angle=75, stop=True)#for right, angle and steer are positive
     gyro_straight(drive_motors, 4, 25)
     front_motor.run_for_degrees(250, speed=65)
-    gyro_straight(drive_motors, 10, -35)
+    gyro_straight(drive_motors, 9, -35)
     angle_turn(steer=100, speed=35, angle=70, stop=True)
     front_motor.run_for_degrees(-250, speed=65)
     gyro_straight(drive_motors, 40, 50)
