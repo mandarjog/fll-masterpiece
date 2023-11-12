@@ -1,4 +1,4 @@
-# LEGO type:standard slot:15 autostart
+# LEGO type:standard slot:14 autostart
 from spike import PrimeHub, LightMatrix, Button, StatusLight, ForceSensor, MotionSensor, Speaker, ColorSensor, App, DistanceSensor, Motor, MotorPair
 from spike.control import wait_for_seconds, wait_until, Timer
 from math import *
@@ -6,10 +6,14 @@ from math import *
 hub = PrimeHub()
 hub.light_matrix.show_image('HAPPY')
 
-left_color_sensor = ColorSensor('B')
-right_color_sensor = ColorSensor('F')
+#left_color_sensor = ColorSensor('B')
+#right_color_sensor = ColorSensor('F')
+front_motor = Motor('D')
+back_motor = Motor('C')
 motors = MotorPair('A', 'E')
 left_motor = Motor('A')
+ONE_ROTATION_DISTANCE = 27.018
+
 
 # calculates turn by taking error and multiplying it by + or - and KColor 
 # to find the direction and magnitude of correction
@@ -62,9 +66,10 @@ def gyro_turn(motion_sensor: MotionSensor, motor_pair: MotorPair, degrees: int, 
     motor_pair.stop()
 
 def gyro_straight(motion_sensor: MotionSensor, motor_pair: MotorPair, 
-                  dist_degrees: int, single_motor:Motor, motors_power=25):
+                  dist: int, single_motor:Motor, motors_power=25):
     power_range = 30
 
+    dist_degrees = dist * 360 / ONE_ROTATION_DISTANCE
     backwards = False
     if motors_power < 0:
         backwards = True
@@ -137,10 +142,59 @@ def line_follow(color_sensor: ColorSensor, motors: MotorPair, black_on_left: boo
 #    stop_color_sensor=right_color_sensor)
 
 #gyro_turn(motion_sensor=hub.motion_sensor, motor_pair=motors, degrees=90, turn_speed=25, left_turn=False)
-gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist_degrees=1000, single_motor=left_motor, motors_power=-40)
+#gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist_degrees=1000, single_motor=left_motor, motors_power=-40)
 
 def test_steering():
     #motors.start_at_power(power=20, steering=-50)
     motors.start_tank_at_power(left_power=20, right_power=20)
 
 #test_steering()
+
+def mission_2_3_5():
+    """
+    run: B
+    """
+    gyro_error = hub.motion_sensor.get_yaw_angle()
+    #go to straight to mision 2
+    #motion_sensor: MotionSensor, motor_pair: MotorPair, 
+    #              dist: int, single_motor:Motor, motors_power=25
+    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=60, single_motor=left_motor, motors_power=-50)
+    #turn towards mission 2
+    gyro_turn(motion_sensor=hub.motion_sensor, motor_pair=motors, degrees= 35, turn_speed=25, left_turn=True)
+
+    #pump(do mision 2)
+    motors.set_stop_action('coast')
+    # drive towards mission 2
+    distance = gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=12, single_motor=left_motor, motors_power=-30)
+    print ("Total distance travelled", distance)
+    # drive away from mission 2
+    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=7, single_motor=left_motor, motors_power=30)
+    # Ensure angle is still -35, aligned towards mission 2
+    #gyro_turn(motion_sensor=hub.motion_sensor, motor_pair=motors, degrees= 35, turn_speed=25, left_turn=False)
+  # drive towards mission 2 - 2nd pump start
+    distance = gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=7, single_motor=left_motor, motors_power=-30)
+    print ("Total distance travelled", distance)
+    # drive away from mission 2 - 2nd pump end
+    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=7, single_motor=left_motor, motors_power=30)
+    #turn away from mission 2(towards mission 3)
+    gyro_turn(motion_sensor=hub.motion_sensor, motor_pair=motors, degrees= 90, turn_speed=25, left_turn=False)
+ 
+    #go to mission 3
+    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=-30, single_motor=left_motor, motors_power=40)
+    #turn into mission 3
+    gyro_turn(motion_sensor=hub.motion_sensor, motor_pair=motors, degrees= 90, turn_speed=25, left_turn=True)
+
+    #ram into missioon 3 to align
+    motors.move(0.5, 'seconds', 0, -50)
+    #go backwards to prepare to do mission
+    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=4, single_motor=left_motor, motors_power=40)
+    #do mission
+    back_motor.run_for_degrees(-720, 100)
+    wait_for_seconds(1)
+    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=1, single_motor=left_motor, motors_power=40)
+    back_motor.run_for_degrees(400, 70)
+    #turn away from mission 3
+    gyro_turn(hub.motion_sensor, motors, degrees=90, turn_speed=25)
+
+
+mission_2_3_5()
