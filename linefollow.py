@@ -8,8 +8,8 @@ hub = PrimeHub()
 #hub.light_matrix.show_image('HAPPY')
 front_motor = Motor('D')
 back_motor = Motor('C')
-left_color_sensor = ColorSensor('B')
-right_color_sensor = ColorSensor('F')
+#left_color_sensor = ColorSensor('B')
+#right_color_sensor = ColorSensor('F')
 
 motors = MotorPair('A', 'E')
 left_motor = Motor('A')
@@ -218,17 +218,24 @@ def mission_2_3_5():
     gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=-42, single_motor=left_motor, speed=50)
     #turn towards mission 2
     angle_turn(motor_pair=motors, steer=-100, speed=30, angle= -35, stop=True)
+
     #pump(do mision 2)
     motors.set_stop_action('coast')
+    # drive towards mission 2
     distance = gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=-8, single_motor=left_motor, speed=30)
     print ("Total distance travelled", distance)
+    # drive away from mission 2
     gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=4, single_motor=left_motor, speed=30)
+    # Ensure angle is still -35, aligned towards mission 2
     angle_turn(motor_pair=motors, steer=-100, speed=30, angle= -35, stop=True, reset_angle=False)
+    # drive towards mission 2 - 2nd pump start
     distance = gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=-9, single_motor=left_motor, speed=30)
     print ("Total distance travelled", distance)
-    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=2, single_motor=left_motor, speed=30)
+    # drive away from mission 2 - 2nd pump end
+    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=1, single_motor=left_motor, speed=30)
     #turn away from mission 2(towards mission 3)
     angle_turn(motor_pair=motors, steer=100, speed=30, angle=90, stop=True, reset_angle=False)
+    
     #go to mission 3
     gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=-30, single_motor=left_motor, speed=40)
     #turn into mission 3
@@ -240,10 +247,10 @@ def mission_2_3_5():
     #do mission
     back_motor.run_for_degrees(-720, 100)
     wait_for_seconds(1)
-    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=2, single_motor=left_motor, speed=40)
+    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=1, single_motor=left_motor, speed=40)
     back_motor.run_for_degrees(400, 70)
     #turn away from mission 3
-    gyro_turn2(hub.motion_sensor, motors, degrees=90, turn_speed=25, left_turn=True)
+    gyro_turn2(hub.motion_sensor, motors, degrees=90, turn_speed=25)
 
     _mission_5()
     
@@ -261,14 +268,31 @@ def mission_13():
 def _mission_5():
     # mission 5
     hub.light_matrix.write('A')
-    gyro_straight(hub.motion_sensor, motors, 6, left_motor, 50)
+    #drive straight towards mission
+    gyro_straight(hub.motion_sensor, motors, 10, left_motor, -50)
+    #turn towards mission
     hub.light_matrix.write('B')
-    gyro_turn2(hub.motion_sensor, motors, degrees=50, turn_speed=25, left_turn=True)
-    gyro_straight(hub.motion_sensor, motors, 14, left_motor, 50)
-    front_motor.run_for_degrees(-300, 50)
+    gyro_turn2(hub.motion_sensor, motors, degrees=48, turn_speed=25, left_turn=True)
+    #go in to mision
+    gyro_straight(hub.motion_sensor, motors, 13, left_motor, -50)
+    #put attachment down
+    back_motor.run_for_degrees(-350, 50)
+    #flick mission
     gyro_turn2(hub.motion_sensor, motors, degrees=50, turn_speed=100)
-
-
+    #raise attachment back up
+    back_motor.run_for_degrees(300, 50)
+    '''
+    gyro_straight(hub.motion_sensor, motors, 8, left_motor, -50)
+    gyro_turn2(hub.motion_sensor, motors, degrees=15, turn_speed=100, left_turn=True)
+    gyro_straight(hub.motion_sensor, motors, 25, left_motor, -50)
+    gyro_turn2(hub.motion_sensor, motors, degrees=90, turn_speed=100)
+    gyro_straight(hub.motion_sensor, motors, 25, left_motor, -50)
+    '''
+    gyro_straight(hub.motion_sensor, motors, 8, left_motor, -50)
+    gyro_turn2(hub.motion_sensor, motors, degrees=35, turn_speed=100, left_turn=True)
+    gyro_straight(hub.motion_sensor, motors, 34, left_motor, -50)
+    gyro_turn2(hub.motion_sensor, motors, degrees=60, turn_speed=100)
+    gyro_straight(hub.motion_sensor, motors, 50, left_motor, -50)
 
 
 def mission_5(motor_pair, left_motor, right_motor, front_motor):
@@ -307,7 +331,5 @@ def mission_8(motors, left_motor, right_motor):
     motors.move_tank(-25, 'cm', left_speed=20, right_speed=20)
 
 
-mission_5(motors, left_motor, right_motor, front_motor)
 
 mission_2_3_5()
-mission_13()
