@@ -1,5 +1,5 @@
 
-# LEGO type:standard slot:6 autostart
+# LEGO type:standard slot:6
 
 from spike import PrimeHub, LightMatrix, Button, StatusLight, ForceSensor, MotionSensor, Speaker, App, DistanceSensor, Motor, MotorPair
 from spike.control import wait_for_seconds, wait_until, Timer
@@ -16,15 +16,18 @@ motor_pair = MotorPair('A', 'E')
 
 ##
 
-def mission_10(motor_pair, front_motor):
+def mission_10_rolling_camera():
     """
     connor
-    sounds mixer
+    rolling_camera
     """
-    motor_pair.start_tank(-10, -10)
-    motor_pair.move_tank(13, 'cm', left_speed=-20, right_speed=-20)
-    front_motor.run_to_position(208)
-    motor_pair.move_tank(13, 'cm', left_speed =20, right_speed=20)
-    front_motor.run_to_position(0)
+    hub.light_matrix.show_image('PACMAN')
 
-mission_10(motors, front_motor)
+    left_motor.run_to_position(0)
+    right_motor.run_to_position(0)
+    wait_for_seconds(5)
+
+    motor_pair.move_tank(-30, 'cm', left_speed=-50, right_speed=-50)
+    motor_pair.move_tank(-25, 'cm', left_speed=50, right_speed=50)
+
+mission_10_rolling_camera()

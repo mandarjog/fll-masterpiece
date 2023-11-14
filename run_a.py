@@ -1,5 +1,4 @@
 # LEGO type:standard slot:1
-
 from spike import PrimeHub, LightMatrix, Button, StatusLight, ForceSensor, MotionSensor, Speaker, App, DistanceSensor, Motor, MotorPair
 from spike.control import wait_for_seconds, wait_until, Timer
 from math import *
@@ -207,8 +206,6 @@ def line_follow(color_sensor: ColorSensor, motors: MotorPair, black_on_left: boo
 #    dist_degrees=360, single_motor=left_motor,
 #    stop_color_sensor=right_color_sensor)
 
-
-
 def barnarnar_boat():
     gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=-27, single_motor=left_motor, speed=40)
     back_motor.run_for_seconds(1,-30)
@@ -228,6 +225,7 @@ def barnarnar_boat():
     front_motor.run_for_seconds(0.5,-50)
     gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=-25, single_motor=left_motor, speed=20)'''
 
+# LEGO type:standard slot:1
 barnarnar_boat()
 #down()
 

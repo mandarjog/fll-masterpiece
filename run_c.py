@@ -12,7 +12,7 @@ left_motor = Motor('A')
 right_motor = Motor('E')
 
 
-def mission_10_sound_mixer(motor_pair, front_motor):
+def mission_10_sound_mixer():
     """
     connor
     sounds mixer
@@ -29,4 +29,4 @@ def mission_10_sound_mixer(motor_pair, front_motor):
     motor_pair.move_tank(5, 'cm', left_speed=-100, right_speed=100)
     motor_pair.move_tank(-25, 'cm', left_speed=100, right_speed=100)
 
-mission_10_sound_mixer(motor_pair, front_motor)
+mission_10_sound_mixer()
