@@ -346,7 +346,7 @@ def mission_2_3_5():
     gyro_turn(hub.motion_sensor, motors, degrees=90, turn_speed=25)
 
 
-# mission_2_3_5()
+mission_2_3_5()
 
 if battery.voltage() < 8000:
     raise ("Volate less than 8000", battery.voltage())
@@ -356,7 +356,7 @@ if battery.voltage() < 8000:
 #                single_motor=left_motor, motors_power=40, fix_orientation=True, direction=BACKWARD)
 
 
-for i in range(3):
+for i in range(0):
     gyro_straight(
         motion_sensor=hub.motion_sensor,
         motor_pair=motors,
