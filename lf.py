@@ -65,20 +65,23 @@ def gyro_turn(motion_sensor: MotionSensor, motor_pair: MotorPair, degrees: int, 
     wait_until(turn_complete)
     motor_pair.stop()
 
+FORWARD='forward'
+BACKWARD='backward'
+
 def gyro_straight(motion_sensor: MotionSensor, motor_pair: MotorPair, 
-                  dist: int, single_motor:Motor, motors_power=25):
+                  dist: int, single_motor:Motor, motors_power=25, fix_orientation=False, direction=FORWARD):
+    print("gyro_straight start")
     power_range = 30
 
     dist_degrees = dist * 360 / ONE_ROTATION_DISTANCE
-    backwards = False
-    if motors_power < 0:
-        backwards = True
+    backward = False
+    if direction == BACKWARD:
+        motors_power = -1 * abs(motors_power)
+        backward = True
 
     motion_sensor.reset_yaw_angle()
     single_motor.set_degrees_counted(0)
 
-    start_degrees = single_motor.get_degrees_counted()
-    print('Starting Gyro Straight deg', start_degrees)
     total_error = 0
     last_error = 0
     err_diff = 0
@@ -98,20 +101,25 @@ def gyro_straight(motion_sensor: MotionSensor, motor_pair: MotorPair,
         last_error = gyro_error
 
         steering =  calculate_steering_for_gyro(error=gyro_error, total_error=total_error, err_diff=err_diff)
-        if backwards:
+        if backward:
             steering = -1 * steering
-        current_degrees = single_motor.get_degrees_counted()
-        print('error', gyro_error, 'steering', steering, 'deg', current_degrees)
+        degrees_traveled = single_motor.get_degrees_counted()
+        #print('error', gyro_error, 'steering', steering, 'deg', degrees_traveled)
         #motors.start_at_power(motors_power, steering)
         right_motor_power = int(motors_power + (steering/100) * power_range)
         left_motor_power = int(motors_power - (steering/100) * power_range)
 
         motors.start_tank_at_power(left_motor_power, right_motor_power)
 
-        
-        degrees_traveled = current_degrees - start_degrees
-
     motor_pair.stop()
+    
+    print("gyro_straight end error", gyro_error)
+
+    if gyro_error != 0 and fix_orientation: # fix orientation
+        left_turn = True
+        if gyro_error < 0:
+            left_turn = False
+        gyro_turn(motion_sensor, motor_pair, degrees=abs(gyro_error), left_turn=left_turn)
 
 
 # black_on_left: True if black line is on the left of white.
@@ -158,29 +166,35 @@ def mission_2_3_5():
     #go to straight to mision 2
     #motion_sensor: MotionSensor, motor_pair: MotorPair, 
     #              dist: int, single_motor:Motor, motors_power=25
-    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=60, single_motor=left_motor, motors_power=-50)
+    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=60,
+                  single_motor=left_motor, motors_power=50, fix_orientation=True, direction=BACKWARD)
     #turn towards mission 2
     gyro_turn(motion_sensor=hub.motion_sensor, motor_pair=motors, degrees= 35, turn_speed=25, left_turn=True)
 
     #pump(do mision 2)
     motors.set_stop_action('coast')
     # drive towards mission 2
-    distance = gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=12, single_motor=left_motor, motors_power=-30)
+    distance = gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=12,
+                             single_motor=left_motor, motors_power=30, direction=BACKWARD)
     print ("Total distance travelled", distance)
     # drive away from mission 2
-    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=7, single_motor=left_motor, motors_power=30)
+    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=7, 
+                  single_motor=left_motor, motors_power=30, fix_orientation=True, direction=FORWARD)
     # Ensure angle is still -35, aligned towards mission 2
     #gyro_turn(motion_sensor=hub.motion_sensor, motor_pair=motors, degrees= 35, turn_speed=25, left_turn=False)
   # drive towards mission 2 - 2nd pump start
-    distance = gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=7, single_motor=left_motor, motors_power=-30)
+    distance = gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=7, 
+                             single_motor=left_motor, motors_power=30, direction=BACKWARD)
     print ("Total distance travelled", distance)
     # drive away from mission 2 - 2nd pump end
-    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=7, single_motor=left_motor, motors_power=30)
+    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=7, 
+                  single_motor=left_motor, motors_power=30, direction=FORWARD, fix_orientation=True)
     #turn away from mission 2(towards mission 3)
     gyro_turn(motion_sensor=hub.motion_sensor, motor_pair=motors, degrees= 90, turn_speed=25, left_turn=False)
  
     #go to mission 3
-    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=-30, single_motor=left_motor, motors_power=40)
+    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=30, 
+                  single_motor=left_motor, motors_power=40, direction=BACKWARD)
     #turn into mission 3
     gyro_turn(motion_sensor=hub.motion_sensor, motor_pair=motors, degrees= 90, turn_speed=25, left_turn=True)
 
@@ -197,4 +211,12 @@ def mission_2_3_5():
     gyro_turn(hub.motion_sensor, motors, degrees=90, turn_speed=25)
 
 
-mission_2_3_5()
+#mission_2_3_5()
+
+
+for i in range(4):
+    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=12, 
+                  single_motor=left_motor, motors_power=30, fix_orientation=True, direction=BACKWARD)
+    
+    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=12, 
+                  single_motor=left_motor, motors_power=30, fix_orientation=True, direction=FORWARD)
