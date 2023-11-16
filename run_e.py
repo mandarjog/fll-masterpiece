@@ -87,7 +87,7 @@ def fllCastBot():
 drive_motors_i, single_motor, drive_motors = fllStandardBot()
 drive_motors.set_stop_action('brake')
 moving_motors = drive_motors
-front_motor = Motor('C')
+front_motor = Motor('D')
 
 def delivery_and_hologram_performer():
     gyro_straight(drive_motors, 17, 35)#drive motors, distance, speed
