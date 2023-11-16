@@ -1,4 +1,4 @@
-# LEGO type:standard slot:14 autostart
+# LEGO type:standard slot:15
 from spike import (
     PrimeHub,
     MotionSensor,
@@ -9,6 +9,7 @@ from spike import (
 from spike.control import wait_for_seconds, wait_until, Timer
 from math import *
 from hub import battery
+import time
 
 hub = PrimeHub()
 hub.light_matrix.show_image("HAPPY")
@@ -83,6 +84,33 @@ def gyro_turn(
 FORWARD = "forward"
 BACKWARD = "backward"
 
+# accelerate for this number of degrees
+P1 = 360
+# deccelerate for this number of degrees
+P2 = 360
+
+min_power = 20
+
+def get_power(max_power:int, dist_max: int, dist_degrees:int)-> int:
+    # 0 -- p1 -- p2 -- dist_max
+
+    power = 0
+    c = 0
+
+    if dist_degrees <= P1:
+        m = (max_power - min_power)/P1
+        power = m * dist_degrees + min_power
+        c = 1
+    elif dist_degrees > P1 and dist_degrees < (dist_max - P2):
+        power = max_power
+        c = 2
+    else:
+        m = (max_power - min_power) / (P2)
+        power = min_power + m * (dist_max - dist_degrees)
+        c = 3
+
+    print("deg", dist_degrees, "power", power, c)
+    return int(power)
 
 def gyro_straight(
     motion_sensor: MotionSensor,
@@ -92,8 +120,10 @@ def gyro_straight(
     motors_power=25,
     fix_orientation=False,
     direction=FORWARD,
+    maxtime = 0.0
 ):
     DEBUG = False
+    start_time = time.time()
     if motors_power < 20:
         raise ("motors_power <20 or negative", motors_power)
 
@@ -118,6 +148,7 @@ def gyro_straight(
     # start moving slowly
     motors.start_at_power(dirn * start_power)
 
+    
     mp = abs(motors_power - start_power)
 
     while degrees_traveled < dist_degrees:
@@ -138,12 +169,13 @@ def gyro_straight(
         )
         degrees_traveled = abs(single_motor.get_degrees_counted())
 
+        power = get_power(motors_power, dist_degrees, degrees_traveled)
         # power increases from start_power to motors_power and then
         # back to start_power so that breaking is gentle
-        power = int(
-            motors_power
-            - mp * 2 * abs(degrees_traveled - dist_degrees / 2) / dist_degrees
-        )
+        #power = int(
+        #    motors_power
+        #    - mp * 2 * abs(degrees_traveled - dist_degrees / 2) / dist_degrees
+        #)
 
         # if power is less than start_power (20), the robot does not move
         power = max(start_power, power)
@@ -164,6 +196,11 @@ def gyro_straight(
             )
 
         motors.start_at_power(dirn * power, steering)
+
+        if maxtime > 0:
+            if time.time() - start_time > maxtime:
+                print("maxtime reached")
+                break
 
     motor_pair.stop()
 
@@ -237,7 +274,7 @@ def mission_2_3_5():
         motor_pair=motors,
         dist=60,
         single_motor=left_motor,
-        motors_power=50,
+        motors_power=60,
         fix_orientation=True,
         direction=BACKWARD,
     )
@@ -260,6 +297,7 @@ def mission_2_3_5():
         single_motor=left_motor,
         motors_power=30,
         direction=BACKWARD,
+        maxtime=1
     )
     print("Total distance travelled", distance)
     # drive away from mission 2
@@ -278,17 +316,18 @@ def mission_2_3_5():
     distance = gyro_straight(
         motion_sensor=hub.motion_sensor,
         motor_pair=motors,
-        dist=7,
+        dist=8,
         single_motor=left_motor,
         motors_power=30,
         direction=BACKWARD,
+        maxtime=1
     )
     print("Total distance travelled", distance)
     # drive away from mission 2 - 2nd pump end
     gyro_straight(
         motion_sensor=hub.motion_sensor,
         motor_pair=motors,
-        dist=7,
+        dist=3,
         single_motor=left_motor,
         motors_power=30,
         direction=FORWARD,
@@ -298,8 +337,8 @@ def mission_2_3_5():
     gyro_turn(
         motion_sensor=hub.motion_sensor,
         motor_pair=motors,
-        degrees=90,
-        turn_speed=25,
+        degrees=123,
+        turn_speed=30,
         left_turn=False,
     )
 
@@ -346,7 +385,7 @@ def mission_2_3_5():
     gyro_turn(hub.motion_sensor, motors, degrees=90, turn_speed=25)
 
 
-mission_2_3_5()
+#mission_2_3_5()
 
 if battery.voltage() < 8000:
     raise ("Volate less than 8000", battery.voltage())
@@ -355,25 +394,27 @@ if battery.voltage() < 8000:
 # gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=40,
 #                single_motor=left_motor, motors_power=40, fix_orientation=True, direction=BACKWARD)
 
-
-for i in range(0):
+motors.set_stop_action("coast")
+for i in range(1):
     gyro_straight(
         motion_sensor=hub.motion_sensor,
         motor_pair=motors,
-        dist=40,
+        dist=20,
         single_motor=left_motor,
-        motors_power=50,
+        motors_power=25,
         fix_orientation=True,
         direction=FORWARD,
     )
-    gyro_turn(motion_sensor=hub.motion_sensor, motor_pair=motors, degrees=12)
+    #gyro_turn(motion_sensor=hub.motion_sensor, motor_pair=motors, degrees=12)
 
+'''
     gyro_straight(
         motion_sensor=hub.motion_sensor,
         motor_pair=motors,
-        dist=40,
+        dist=20,
         single_motor=left_motor,
-        motors_power=50,
+        motors_power=90,
         fix_orientation=True,
         direction=BACKWARD,
     )
+'''
