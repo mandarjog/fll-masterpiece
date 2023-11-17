@@ -26,7 +26,7 @@ def mission_10_sound_mixer():
     motor_pair.move_tank(10, 'cm', left_speed=-20, right_speed=-20)
     #motor_pair.move_tank(5, 'cm', left_speed=10, right_speed=0)
     #right_motor.run_to_position(90)
-    motor_pair.move_tank(5, 'cm', left_speed=-100, right_speed=100)
-    motor_pair.move_tank(-25, 'cm', left_speed=100, right_speed=100)
+    motor_pair.move_tank(5, 'cm', left_speed=-50, right_speed=50)
+    motor_pair.move_tank(-25, 'cm', left_speed=50, right_speed=50)
 
 mission_10_sound_mixer()
