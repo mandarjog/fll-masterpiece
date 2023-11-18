@@ -1,5 +1,6 @@
 # LEGO type:standard slot:2 autostart
 
+
 from spike import PrimeHub, LightMatrix, Button, StatusLight, ForceSensor, MotionSensor, Speaker, ColorSensor, App, DistanceSensor, Motor, MotorPair
 from spike.control import wait_for_seconds, wait_until, Timer
 from math import *
@@ -7,8 +8,9 @@ import time
 motors = MotorPair('A', 'E')
 left_motor = Motor('A')
 hub = PrimeHub()
-ONE_ROTATION_DISTANCE = 27.018
+
 ## ----
+ONE_ROTATION_DISTANCE = 27.018
 
 def calculate_steering_for_gyro(error: int, total_error: int, err_diff=0) -> int:
     KAngle = 1.15
