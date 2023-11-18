@@ -371,14 +371,6 @@ def mission_2_3_5():
     print ("Total distance travelled", distance)
     # drive away from mission 2
     gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=4, single_motor=left_motor, speed=30)
-    # Ensure angle is still -35, aligned towards mission 2
-    angle_turn(motor_pair=motors, steer=-100, speed=30, angle= -35, stop=True, reset_angle=False)
-    # drive towards mission 2 - 2nd pump start
-    distance = gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=-9, single_motor=left_motor, speed=30)
-    print ("Total distance travelled", distance)
-    # drive away from mission 2 - 2nd pump end
-    motors.set_stop_action('coast')
-    gyro_straight(motion_sensor=hub.motion_sensor, motor_pair=motors, dist=1, single_motor=left_motor, speed=30)
     #turn away from mission 2(towards mission 3)
     angle_turn(motor_pair=motors, steer=100, speed=30, angle=90, stop=True, reset_angle=False)
 
